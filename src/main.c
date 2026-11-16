@@ -707,7 +707,7 @@ void main(void) {
 			braking = 0;
 		}
 		if (range + (sine ? delta : -delta) < input) newduty = scale(input, range + delta, 2000, cfg.duty_min * 20, cfg.duty_max * 20);
-		else sine = scale(input, 0, range - delta, 1000 << IFTIM_XRES, cfg.prot_stall ? (333333 << IFTIM_XRES) / cfg.prot_stall : 145 << IFTIM_XRES);
+		else sine = scale(input, 0, range - delta, 1667 << IFTIM_XRES, cfg.prot_stall ? (333333 << IFTIM_XRES) / cfg.prot_stall : 145 << IFTIM_XRES);
 		if (sine) { // Sine startup
 			if (!newduty) {
 				if (!ertm) goto skipduty;
@@ -720,7 +720,8 @@ void main(void) {
 				int a = step - 1;
 				int b = a / 60;
 				int c = b * 60;
-				IFTIM_OCR = sine * (reverse ? (void)(++b == 6 && (b = 0)), a - c + 1 : c - a + 60); // Commutation delay
+				int d = sine * (reverse ? (void)(++b == 6 && (b = 0)), a - c + 1 : c - a + 60); // BARU: hitung dulu di variabel lokal
+				IFTIM_OCR = min(d, (1 << (IFTIM_XRES + 16)) - 1); // BARU: batasi ke 65535 (timer 16-bit)
 				TIM_ARR(IFTIM) = (1 << (IFTIM_XRES + 16)) - 1;
 				TIM_EGR(IFTIM) = TIM_EGR_UG;
 				step = b + 1;
