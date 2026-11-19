@@ -721,7 +721,7 @@ void main(void) {
 				int b = a / 60;
 				int c = b * 60;
 				int d = sine * (reverse ? (void)(++b == 6 && (b = 0)), a - c + 1 : c - a + 60); // BARU: hitung dulu di variabel lokal
-				IFTIM_OCR = min(d, (1 << (IFTIM_XRES + 16)) - 1); // BARU: batasi ke 65535 (timer 16-bit)
+				IFTIM_OCR = min(d, 60000); // BARU: batasi ke 65535 (timer 16-bit)
 				TIM_ARR(IFTIM) = (1 << (IFTIM_XRES + 16)) - 1;
 				TIM_EGR(IFTIM) = TIM_EGR_UG;
 				step = b + 1;
